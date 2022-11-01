@@ -1,70 +1,53 @@
 <template>
-    <div id="app">
-      <vc-viewer>
-        <vc-entity
-          :billboard="billboard"
-          :position="{ lng: 108, lat: 32 }"
-          :point="point"
-          :label="label"
-          @click="onEntityEvt"
-          @mouseover="onEntityEvt"
-          @mouseout="onEntityEvt"
-        >
-          <vc-graphics-rectangle
-            :coordinates="[130, 20, 80, 25]"
-            material="green"
-          />
-        </vc-entity>
-        <vc-layer-imagery>
-          <vc-imagery-provider-osm />
-        </vc-layer-imagery>
-        <vc-navigation :other-opts="false" />
-      </vc-viewer>
-    </div>
+  <div>
+  <div id="cesiumContainer">
+  </div>
+</div>
 </template>
 
 <script>
-
-import { reactive, toRefs } from 'vue';
+import { getCurrentInstance, onMounted, reactive, toRefs } from 'vue';
 
 export default {
   name: 'CesiumView',
   components: {
   },
   setup() {
+    const { proxy } = getCurrentInstance()
+    
     const state = reactive({
-        point: {
-            pixelSize: 28,
-            color: 'red',
-        },
-        label: {
-            text: 'Hello VueCesium',
-            pixelOffset: [0, 80],
-            fillColor: 'red',
-        },
-        billboard: {
-            image: 'https://zouyaoji.top/vue-cesium/favicon.png',
-            scale: 0.5,
-        }
+      map3d: null,
+      map: null,
     })
-    const onEntityEvt = (e) => {
-        if (e.type === 'onmouseover') {
-            state.billboard = {
-            image: 'https://zouyaoji.top/vue-cesium/favicon.png',
-            scale: 0.6
-            }
-        } else if (e.type === 'onmouseout') {
-            state.billboard = {
-            image: 'https://zouyaoji.top/vue-cesium/favicon.png',
-            scale: 0.5
-            }
-        }
+
+    const initView = async () => {
+      try {
+        await proxy.$CesiumUtils.init(state)
+      } catch (error) {
+        console.log(error)
+      }
     }
+
+    onMounted(()=> {
+      initView()
+    })
+
+
     return {
       ...toRefs(state),
-      onEntityEvt
+      initView
     }
+
   }
 }
 </script>
   
+<style scoped>
+html, body, #cesiumContainer {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+</style>

@@ -2,9 +2,11 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import VueCesium from 'vue-cesium'
+import CesiumUtils from '@/services/Cesium'
 
-createApp(App).use(store).use(router).use(VueCesium).mount('#app')
+const app = createApp(App)
+app.config.globalProperties.$CesiumUtils = CesiumUtils
+app.use(store).use(router).mount('#app')
 
 
 
